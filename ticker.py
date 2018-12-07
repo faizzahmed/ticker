@@ -1,10 +1,17 @@
 # # Stock ticker
-import beautifulsoup 
+from bs4 import BeautifulSoup
 import requests
 
-endpoint = https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol=
-symbol = TATAMOTORS
+pathVar = "https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol="
+symbol = "TATAMOTORS"
 
-url1 =  endpoint + symbol
+url1 =  pathVar + symbol
 
-print (endpoint + symbol )
+print (pathVar + symbol)
+
+page = requests.get(url1)
+print (page.status_code)
+# print (page.content)
+
+soup = BeautifulSoup(page.content, 'html.parser')
+print(soup.prettify())
