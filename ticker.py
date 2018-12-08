@@ -1,17 +1,33 @@
 # # Stock ticker
 from bs4 import BeautifulSoup
 import requests
+import json
+# import selenium  
 
-pathVar = "https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol="
-symbol = "TATAMOTORS"
+# TODO - clean code someday
 
-url1 =  pathVar + symbol
+# GET NSE page 
+def callNSE():
+    pathVar = "https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol="
+    symbol = "TATAMOTORS"
+    finalURL =  pathVar + symbol
+    page = requests.get(finalURL)
+    return page;
 
-print (pathVar + symbol)
+# abstract Scraping logic here 
+def scrapeData();
+    return dataDictionary;
 
-page = requests.get(url1)
-print (page.status_code)
-# print (page.content)
+respSource = callNSE()
+soup = BeautifulSoup(respSource.content, 'html.parser')
+divStruct = soup.find("div", {"id": "responseDiv"})
+divStructStr = str(divStruct)
+jsonStruct = divStructStr.split('<div id="responseDiv" style="display:none">', 2)
+jsonStruct1 = str(jsonStruct[1])
+jsonstruct2 = jsonStruct1.split('</div>',2)
+finalJSON = str(jsonstruct2[0])
+newDictionary=json.loads(str(finalJSON))['data']
+datadict= newDictionary[0]
+print(datadict['symbol'] + '  ' + datadict['lastPrice'] + ' ' + datadict['change'] + ' High:' + datadict['dayHigh'] + ' Low:' + datadict['dayLow'])
 
-soup = BeautifulSoup(page.content, 'html.parser')
-print(soup.prettify())
+
