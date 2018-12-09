@@ -14,9 +14,9 @@ def callNSE():
     page = requests.get(finalURL)
     return page;
 
-# abstract Scraping logic here 
-def scrapeData();
-    return dataDictionary;
+# # abstract Scraping logic here 
+# def scrapeData();
+#     return dataDictionary;
 
 respSource = callNSE()
 soup = BeautifulSoup(respSource.content, 'html.parser')
