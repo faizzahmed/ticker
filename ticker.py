@@ -6,28 +6,35 @@ import json
 
 # TODO - clean code someday
 
+# read file 
+
 # GET NSE page 
-def callNSE():
+def callNSE(symbol):
     pathVar = "https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol="
-    symbol = "TATAMOTORS"
     finalURL =  pathVar + symbol
     page = requests.get(finalURL)
     return page;
 
 # # abstract Scraping logic here 
-# def scrapeData();
-#     return dataDictionary;
+def scrapeData(ReqSource):
+    soup = BeautifulSoup(ReqSource.content, 'html.parser')
+    divStruct = soup.find("div", {"id": "responseDiv"})
+    divStructStr = str(divStruct)
+    jsonStruct = divStructStr.split('<div id="responseDiv" style="display:none">', 2)
+    jsonStruct1 = str(jsonStruct[1])
+    jsonstruct2 = jsonStruct1.split('</div>',2)
+    finalJSON = str(jsonstruct2[0])
+    newDictionary=json.loads(str(finalJSON))['data']
+    datadict= newDictionary[0]
+    return datadict;
 
-respSource = callNSE()
-soup = BeautifulSoup(respSource.content, 'html.parser')
-divStruct = soup.find("div", {"id": "responseDiv"})
-divStructStr = str(divStruct)
-jsonStruct = divStructStr.split('<div id="responseDiv" style="display:none">', 2)
-jsonStruct1 = str(jsonStruct[1])
-jsonstruct2 = jsonStruct1.split('</div>',2)
-finalJSON = str(jsonstruct2[0])
-newDictionary=json.loads(str(finalJSON))['data']
-datadict= newDictionary[0]
-print(datadict['symbol'] + '  ' + datadict['lastPrice'] + ' ' + datadict['change'] + ' High:' + datadict['dayHigh'] + ' Low:' + datadict['dayLow'])
+# __main__
+def main():   
+    file = open ( 'C:\\Projects\\ticker\\configStockNames.txt', 'r' )
+    for line in file: 
+        respSource = callNSE(line)
+        stockData = scrapeData(respSource)
+        print(stockData['symbol'] + '  ' + stockData['lastPrice'] + ' ' + stockData['change'] + ' High:' + stockData['dayHigh'] + ' Low:' + stockData['dayLow'])
 
-
+# invoke main
+main()
