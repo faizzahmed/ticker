@@ -30,9 +30,10 @@ def scrapeData(ReqSource):
 
 # __main__
 def main():   
-    file = open ( 'C:\\Projects\\ticker\\configStockNames.txt', 'r' )
-    for line in file: 
-        respSource = callNSE(line)
+    stockListFile = open ( 'C:\\Projects\\ticker\\configStockNames.txt', 'r' )
+    for line in stockListFile: 
+        stock = line.rstrip('\n')
+        respSource = callNSE(stock)
         stockData = scrapeData(respSource)
         print(stockData['symbol'] + '  ' + stockData['lastPrice'] + ' ' + stockData['change'] + ' High:' + stockData['dayHigh'] + ' Low:' + stockData['dayLow'])
 

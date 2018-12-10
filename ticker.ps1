@@ -1,1 +1,1 @@
-﻿powershell.exe C:\Projects\ticker\ticker.py
+﻿powershell.exe python C:\Projects\ticker\ticker.py
