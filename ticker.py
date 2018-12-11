@@ -35,7 +35,10 @@ def main():
         stock = line.rstrip('\n')
         respSource = callNSE(stock)
         stockData = scrapeData(respSource)
-        print(stockData['symbol'] + '  ' + stockData['lastPrice'] + ' ' + stockData['change'] + ' High:' + stockData['dayHigh'] + ' Low:' + stockData['dayLow'])
+        print('------------------------------------------------------------------------------')
+        print(stockData['symbol'] + '  ' + stockData['lastPrice'] +  '  ' + stockData['pChange']+'%'  + '  ' + stockData['change'] + ' High:' + stockData['dayHigh'] + ' Low:' + stockData['dayLow'])
 
+    print('------------------------------------------------------------------------------')
+     
 # invoke main
 main()
