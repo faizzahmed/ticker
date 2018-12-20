@@ -38,22 +38,26 @@ def scrapeData(ReqSource):
         datadict = ''
     return datadict, respcode
 
+
 # __main__
 
 
 def main():
+    fmt = '{:<15} {:<10} {:<7} {:<7} {:<7} {:<7}'
+    print(fmt.format('symbol','lastPrice','pChange','change','dayHigh','dayLow'))
     with open('C:\\Projects\\ticker\\configStockNames.txt') as stockListFile:
         for line in stockListFile:
             stock = line.rstrip('\n')
             respSource = callNSE(stock)
 
             stockData, nseresp = scrapeData(respSource)
+
             print(
                 '------------------------------------------------------------------------------')
 
             if nseresp == 200:
-                print(stockData['symbol'] + '  ' + stockData['lastPrice'] + '  ' + stockData['pChange']+'%' +
-                      '  ' + stockData['change'] + ' High:' + stockData['dayHigh'] + ' Low:' + stockData['dayLow'])
+                print(fmt.format(stockData['symbol'] , stockData['lastPrice'], stockData['pChange'], stockData['change'],stockData['dayHigh'],stockData['dayLow']))
+
             elif nseresp == 404:
                 print(stock + ' --> No data found')
             else:
