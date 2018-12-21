@@ -10,32 +10,35 @@ import json
 
 # GET NSE page
 
+# bashcolors
+# class bcolors:
+#     HEADER = '\033[95m'
+#     OKBLUE = '\033[94m'
+#     OKGREEN = '\033[92m'
+#     WARNING = '\033[93m'
+#     FAIL = '\033[91m'
+#     ENDC = '\033[0m'
+#     BOLD = '\033[1m'
+#     UNDERLINE = '\033[4m'
 
 def callNSE(symbol):
     pathVar = "https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol="
-    finalURL = pathVar + symbol
-    page = requests.get(finalURL)
+    page = requests.get(pathVar + symbol)
     return page
 
 # # abstract Scraping logic here
 
 
 def scrapeData(ReqSource):
-    soup = BeautifulSoup(ReqSource.content, 'html.parser')
-    divStruct = soup.find("div", {"id": "responseDiv"})
-    divStructStr = str(divStruct)
-    jsonStruct = divStructStr.split(
+    jsonStruct = str(BeautifulSoup(ReqSource.content,'html.parser').find("div", {"id": "responseDiv"})).split(
         '<div id="responseDiv" style="display:none">', 2)
-    jsonStruct1 = str(jsonStruct[1])
-    jsonstruct2 = jsonStruct1.split('</div>', 2)
-    finalJSON = str(jsonstruct2[0])
-    newDictionary = json.loads(str(finalJSON))['data']
+    newDictionary = json.loads(str(str(jsonStruct[1]).split('</div>', 2)[0]))['data']
     if bool(newDictionary) == True:
         respcode = 200
         datadict = newDictionary[0]
     else:
         respcode = 404
-        datadict = ''
+        datadict = ""
     return datadict, respcode
 
 
@@ -43,14 +46,20 @@ def scrapeData(ReqSource):
 
 
 def main():
+    print(
+        '------------------------------------------------------------------------------')
+    # bashcolors
+    # print (bcolors.WARNING + "warning coloured text here" + bcolors.ENDC)
     fmt = '{:<15} {:<10} {:<10} {:<10} {:<10} {:<10}'
-    print(fmt.format('symbol', 'lastPrice',
-                     'pChange', 'change', 'dayHigh', 'dayLow'))
+    print(fmt.format('symbol','lastPrice','pChange','change','dayHigh','dayLow'))
     with open('C:\\Projects\\ticker\\configStockNames.txt') as stockListFile:
         for line in stockListFile:
             stock = line.rstrip('\n')
             respSource = callNSE(stock)
 
+            # check all data items in this  print 
+            # print(respSource)
+            
             stockData, nseresp = scrapeData(respSource)
 
             print(
