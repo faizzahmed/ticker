@@ -1,3 +1,7 @@
+# ______________________________________________________________________________________________________
+#                               Stock Ticker Tkinter GUI
+# WIP - use ticker script to expose same data via tkinter GUI  
+# ______________________________________________________________________________________________________
 from tkinter import *
 from ticker import scrapense
 from ticker import readfile
@@ -6,49 +10,66 @@ from ticker import readfile
 # CONFIGRATIONS
 # ______________________________________________________________________________________________________
 CONFIGFILE = 'C:\\Projects\\ticker\\configStockNames.txt'
-NSEURL = "https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol="
-fmt = '{:<20} {:<10} {:<10} {:<10} {:<10} {:<10}'  # globalformat
-dashes = '------------------------------------------------------------------------------'
 #  _____________________________________________________________________________________________________
 # CONFIGRATIONS
 # ______________________________________________________________________________________________________
 
 
-def showlabel(rownumber, stockstring):
-    Label(window, text=stockstring, bg="black",
-          fg="green", justify=LEFT).grid(row=rownumber, column=0, sticky=W)
+def showlabel(rownumber,columnnumber,value):
+    
+    dispcolor = "black"
+    backgroundcolor = "white"
+
+    # heading is blue
+    if (rownumber == 0) :
+        backgroundcolor = "blue"
+    else:
+    #   stock name is blue 
+        if columnnumber == 0:
+            backgroundcolor = "blue"
+    #   change is red or green
+        elif (columnnumber == 2) or (columnnumber == 3):
+            if value[0] == '-':
+                dispcolor = 'red'
+            else:
+                dispcolor = 'green'
+        else:
+            backgroundcolor = "white"
+
+    Label(window, text=value,relief=RIDGE,bg=backgroundcolor,fg=dispcolor,width=15).grid(row=rownumber, column=columnnumber)
 
 
 if __name__ == "__main__":
     # create window
     window = Tk()
     window.title("NSE stock ticker")
-    window.configure(background="black")
-    stockstring = fmt.format('symbol', 'lastPrice',
-                             'pChange ', 'change', 'dayHigh', 'dayLow')
+    window.configure()
 
-    i = 0
-    showlabel(i, dashes)
-    i += 1
-    showlabel(i, stockstring)
-    i += 1
+    # create heading
+    heading = ['symbol','lastPrice','pChange ','change','dayHigh','dayLow']
+    counter = 0
+    for Iheading in heading:
+        showlabel(0,counter,Iheading)
+        counter+=1
 
+    # get stock data from ticker.py
+    stockcounter=1
     stocklist = readfile()
     for stock in stocklist:
         stockData, nseresp = scrapense(stock)
-        showlabel(i, dashes)
-        i += 1
 
         if nseresp == 200:
-            stockstring = fmt.format(stockData['symbol'], stockData['lastPrice'], (stockData['pChange'] +
-                                                                                   '%'), stockData['change'], stockData['dayHigh'], stockData['dayLow'])
-
+            stockdatalist = [stockData['symbol'],stockData['lastPrice'],(stockData['pChange']+'%'),stockData['change'],stockData['dayHigh'],stockData['dayLow']]
         elif nseresp == 404:
-            stockstring = stock + ' --> No data found'
+            stockdatalist = [stock + ' --> No data found']
         else:
-            stockstring = 'Call unsuccessful'
+            stockdatalist = ['Call unsuccessful']
 
-        showlabel(i, stockstring)
-        i += 1
+        counter = 0
+        for stockdatalistelement in stockdatalist:
+            showlabel(stockcounter,counter,stockdatalistelement)
+            counter+=1
+
+        stockcounter+=1
 
     window.mainloop()
