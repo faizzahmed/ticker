@@ -9,7 +9,7 @@ from ticker import readfile
 # ______________________________________________________________________________________________________
 # CONFIGRATIONS
 # ______________________________________________________________________________________________________
-CONFIGFILE = 'C:\\Projects\\ticker\\configStockNames.txt'
+ICOFILE = 'C:\\Projects\\ticker\\ticker.ico'
 #  _____________________________________________________________________________________________________
 # CONFIGRATIONS
 # ______________________________________________________________________________________________________
@@ -38,20 +38,7 @@ def showlabel(rownumber,columnnumber,value):
 
     Label(window, text=value,relief=RIDGE,bg=backgroundcolor,fg=dispcolor,width=15).grid(row=rownumber, column=columnnumber)
 
-
-if __name__ == "__main__":
-    # create window
-    window = Tk()
-    window.title("NSE stock ticker")
-    window.configure()
-
-    # create heading
-    heading = ['symbol','lastPrice','pChange ','change','dayHigh','dayLow']
-    counter = 0
-    for Iheading in heading:
-        showlabel(0,counter,Iheading)
-        counter+=1
-
+def getstockdata():
     # get stock data from ticker.py
     stockcounter=1
     stocklist = readfile()
@@ -71,5 +58,26 @@ if __name__ == "__main__":
             counter+=1
 
         stockcounter+=1
+    return stockcounter
 
+if __name__ == "__main__":
+    # create window
+    window = Tk()
+    window.title("NSE stock ticker")
+    window.configure()
+
+    # create heading
+    heading = ['symbol','lastPrice','pChange ','change','dayHigh','dayLow']
+    counter = 0
+    for Iheading in heading:
+        showlabel(0,counter,Iheading)
+        counter+=1
+
+    stockcounter = getstockdata()
+
+    # refresh button
+    refreshbutton = Button(window,text="Refresh",width=15,command=getstockdata)
+    refreshbutton.grid(row=stockcounter)
+
+    window.iconbitmap(ICOFILE)
     window.mainloop()
