@@ -1,8 +1,19 @@
-# # Stock ticker
+# ______________________________________________________________________________________________________
+#                                      Stock ticker
+# ______________________________________________________________________________________________________
 from bs4 import BeautifulSoup
 import requests
 import json
-# import selenium
+# ______________________________________________________________________________________________________
+# CONFIGRATIONS
+# ______________________________________________________________________________________________________
+CONFIGFILE = 'C:\\Projects\\ticker\\configStockNames.txt'
+NSEURL = "https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol="
+fmt = '{:<15} {:<10} {:<10} {:<10} {:<10} {:<10}'  # globalformat
+dashes = '------------------------------------------------------------------------------'
+#  _____________________________________________________________________________________________________
+# CONFIGRATIONS
+# ______________________________________________________________________________________________________
 
 # TODO - clean code someday
 
@@ -21,22 +32,25 @@ import json
 #     BOLD = '\033[1m'
 #     UNDERLINE = '\033[4m'
 
+
 def readfile():
-    stocklist = open('C:\\Projects\\ticker\\configStockNames.txt').read().splitlines()
+    stocklist = open(CONFIGFILE).read().splitlines()
     return stocklist
 
+
 def callNSE(symbol):
-    pathVar = "https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol="
-    page = requests.get(pathVar + symbol)
+    page = requests.get(NSEURL + symbol)
     return page
 
 # # abstract Scraping logic here
 
+
 def scrapeData(ReqSource):
-    jsonStruct = str(BeautifulSoup(ReqSource.content,'html.parser').find("div", {"id": "responseDiv"})).split(
+    jsonStruct = str(BeautifulSoup(ReqSource.content, 'html.parser').find("div", {"id": "responseDiv"})).split(
         '<div id="responseDiv" style="display:none">', 2)
-    newDictionary = json.loads(str(str(jsonStruct[1]).split('</div>', 2)[0]))['data']
-    # check all data items in this  print 
+    newDictionary = json.loads(
+        str(str(jsonStruct[1]).split('</div>', 2)[0]))['data']
+    # check all data items in this  print
     # print(datadict)
     if bool(newDictionary) == True:
         respcode = 200
@@ -59,29 +73,26 @@ def scrapense(symbol):
 def main():
     stocklist = readfile()
 
-    print(
-        '------------------------------------------------------------------------------')
+    print(dashes)
     # bashcolors
     # print (bcolors.WARNING + "warning coloured text here" + bcolors.ENDC)
-    fmt = '{:<15} {:<10} {:<10} {:<10} {:<10} {:<10}'
-    print(fmt.format('symbol','lastPrice','pChange','change','dayHigh','dayLow'))
+    print(fmt.format('symbol', 'lastPrice',
+                     'pChange', 'change', 'dayHigh', 'dayLow'))
     for stock in stocklist:
         stockData, nseresp = scrapense(stock)
 
-        print(
-            '------------------------------------------------------------------------------')
+        print(dashes)
 
         if nseresp == 200:
             print(fmt.format(stockData['symbol'], stockData['lastPrice'], stockData['pChange'] +
-                            '%', stockData['change'], stockData['dayHigh'], stockData['dayLow']))
+                             '%', stockData['change'], stockData['dayHigh'], stockData['dayLow']))
 
         elif nseresp == 404:
             print(stock + ' --> No data found')
         else:
             print('Call unsuccessful')
 
-    print(
-        '------------------------------------------------------------------------------')
+    print(dashes)
 
 
 # invoke main
