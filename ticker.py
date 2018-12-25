@@ -6,22 +6,7 @@
 from bs4 import BeautifulSoup
 import requests
 import json
-# ______________________________________________________________________________________________________
-# CONFIGRATIONS
-# ______________________________________________________________________________________________________
-CONFIGFILE = 'C:\\Projects\\ticker\\configStockNames.txt'
-NSEURL = "https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol="
-fmt = '{:<15} {:<10} {:<10} {:<10} {:<10} {:<10}'  # globalformat
-dashes = '------------------------------------------------------------------------------'
-# ______________________________________________________________________________________________________
-# /CONFIGRATIONS
-# ______________________________________________________________________________________________________
-
-# TODO - clean code someday
-
-# read file
-
-# GET NSE page
+import config
 
 # bashcolors
 # class bcolors:
@@ -35,13 +20,15 @@ dashes = '----------------------------------------------------------------------
 #     UNDERLINE = '\033[4m'
 
 
-def readfile():
-    stocklist = open(CONFIGFILE).read().splitlines()
+def readfile(filepath=None):
+    if filepath is None:
+        filepath = config.CONFIGFILE
+    stocklist = open(filepath).read().splitlines()
     return stocklist
 
 
 def callNSE(symbol):
-    page = requests.get(NSEURL + symbol)
+    page = requests.get(config.NSEURL + symbol)
     return page
 
 # # abstract Scraping logic here
@@ -73,20 +60,20 @@ def scrapense(symbol):
 
 
 def main():
-    stocklist = readfile()
+    stocklist = readfile(filepath=None)
 
-    print(dashes)
+    print(config.dashes)
     # bashcolors
     # print (bcolors.WARNING + "warning coloured text here" + bcolors.ENDC)
-    print(fmt.format('symbol', 'lastPrice',
+    print(config.fmt.format('symbol', 'lastPrice',
                      'pChange', 'change', 'dayHigh', 'dayLow'))
     for stock in stocklist:
         stockData, nseresp = scrapense(stock)
 
-        print(dashes)
+        print(config.dashes)
 
         if nseresp == 200:
-            print(fmt.format(stockData['symbol'], stockData['lastPrice'], stockData['pChange'] +
+            print(config.fmt.format(stockData['symbol'], stockData['lastPrice'], stockData['pChange'] +
                              '%', stockData['change'], stockData['dayHigh'], stockData['dayLow']))
 
         elif nseresp == 404:
@@ -94,7 +81,7 @@ def main():
         else:
             print('Call unsuccessful')
 
-    print(dashes)
+    print(config.dashes)
 
 
 # invoke main

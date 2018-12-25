@@ -3,16 +3,11 @@
 # WIP - use ticker script to expose same data via tkinter GUI  
 # ______________________________________________________________________________________________________
 from tkinter import *
+from tkinter.filedialog import askopenfilename
+from tkinter.messagebox import showerror
 from ticker import scrapense
 from ticker import readfile
-
-# ______________________________________________________________________________________________________
-# CONFIGRATIONS
-# ______________________________________________________________________________________________________
-ICOFILE = 'C:\\Projects\\ticker\\ticker.ico'
-#  _____________________________________________________________________________________________________
-# CONFIGRATIONS
-# ______________________________________________________________________________________________________
+import config
 
 
 def showlabel(rownumber,columnnumber,value):
@@ -24,9 +19,9 @@ def showlabel(rownumber,columnnumber,value):
     if (rownumber == 0) :
         backgroundcolor = "blue"
     else:
-    #   stock name is blue 
+    #   stock name is white 
         if columnnumber == 0:
-            backgroundcolor = "blue"
+            backgroundcolor = "white"
     #   change is red or green
         elif (columnnumber == 2) or (columnnumber == 3):
             if value[0] == '-':
@@ -38,19 +33,19 @@ def showlabel(rownumber,columnnumber,value):
 
     Label(window, text=value,relief=RIDGE,bg=backgroundcolor,fg=dispcolor,width=15).grid(row=rownumber, column=columnnumber)
 
-def getstockdata():
+def getstockdata(filepath=None):
     # get stock data from ticker.py
     stockcounter=1
-    stocklist = readfile()
+    stocklist = readfile(filepath)
     for stock in stocklist:
         stockData, nseresp = scrapense(stock)
 
         if nseresp == 200:
             stockdatalist = [stockData['symbol'],stockData['lastPrice'],(stockData['pChange']+'%'),stockData['change'],stockData['dayHigh'],stockData['dayLow']]
         elif nseresp == 404:
-            stockdatalist = [stock + ' --> No data found']
+            stockdatalist = [stock,'No data']
         else:
-            stockdatalist = ['Call unsuccessful']
+            stockdatalist = [stock,'Call unsuccessful']
 
         counter = 0
         for stockdatalistelement in stockdatalist:
@@ -59,6 +54,12 @@ def getstockdata():
 
         stockcounter+=1
     return stockcounter
+
+def loadfile():
+        fname = askopenfilename(filetypes=(("Text files", "*.txt"),
+                                           ("All files", "*.*") ))
+        return fname
+
 
 if __name__ == "__main__":
     # create window
@@ -75,9 +76,13 @@ if __name__ == "__main__":
 
     stockcounter = getstockdata()
 
+    # browse file button
+    browsebutton = Button(window,text="Browse file",width=15,command=loadfile)
+    browsebutton.grid(row=stockcounter, column=1)
+
     # refresh button
     refreshbutton = Button(window,text="Refresh",width=15,command=getstockdata)
     refreshbutton.grid(row=stockcounter)
 
-    window.iconbitmap(ICOFILE)
+    window.iconbitmap(config.ICOFILE)
     window.mainloop()
