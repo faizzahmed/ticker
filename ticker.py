@@ -1,12 +1,14 @@
 # ______________________________________________________________________________________________________
 #                                      Stock ticker
-# shell script to display realtime stock data 
-# $ python ticker.py 
+# shell script to display realtime stock data
+# $ python ticker.py
 # ______________________________________________________________________________________________________
 from bs4 import BeautifulSoup
 import requests
 import json
 import config
+from operator import itemgetter
+from tabulate import tabulate
 
 # bashcolors
 # class bcolors:
@@ -44,17 +46,23 @@ def scrapeData(ReqSource):
     if bool(newDictionary) == True:
         respcode = 200
         datadict = newDictionary[0]
+
+        # trim the data
+        newtrimdict = {}
+        for dataitem in config.DATAITEMLIST:
+            if dataitem == 'pChange':
+                newtrimdict.update({dataitem: datadict[dataitem]+'%'})
+            else:
+                newtrimdict.update({dataitem: datadict[dataitem]})
     else:
         respcode = 404
-        datadict = ""
-    return datadict, respcode
-
+        newtrimdict = {}
+    return newtrimdict, respcode
 
 def scrapense(symbol):
     respSource = callNSE(symbol)
     stockData, nseresp = scrapeData(respSource)
     return stockData, nseresp
-
 
 # __main__
 
@@ -62,27 +70,29 @@ def scrapense(symbol):
 def main():
     stocklist = readfile(filepath=None)
 
-    print(config.dashes)
+    # print(config.dashes)
     # bashcolors
     # print (bcolors.WARNING + "warning coloured text here" + bcolors.ENDC)
-    print(config.fmt.format('symbol', 'lastPrice',
-                     'pChange', 'change', 'dayHigh', 'dayLow'))
+    firstprint = 0
     for stock in stocklist:
         stockData, nseresp = scrapense(stock)
 
-        print(config.dashes)
+        # print(config.dashes)
 
         if nseresp == 200:
-            print(config.fmt.format(stockData['symbol'], stockData['lastPrice'], stockData['pChange'] +
-                             '%', stockData['change'], stockData['dayHigh'], stockData['dayLow']))
+
+            if firstprint == 0: 
+                firstprint = 1
+                completelist = []
+                completelist.append(list(stockData.keys()))
+
+            completelist.append(list(stockData.values()))
 
         elif nseresp == 404:
-            print(stock + ' --> No data found')
+            print(stock + ' --> No data found') 
         else:
             print('Call unsuccessful')
-
-    print(config.dashes)
-
+    print (tabulate(completelist))
 
 # invoke main
 if __name__ == "__main__":
