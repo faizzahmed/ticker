@@ -59,6 +59,7 @@ def scrapeData(ReqSource):
         newtrimdict = {}
     return newtrimdict, respcode
 
+
 def scrapense(symbol):
     respSource = callNSE(symbol)
     stockData, nseresp = scrapeData(respSource)
@@ -73,26 +74,21 @@ def main():
     # print(config.dashes)
     # bashcolors
     # print (bcolors.WARNING + "warning coloured text here" + bcolors.ENDC)
-    firstprint = 0
+    completelist = []
     for stock in stocklist:
         stockData, nseresp = scrapense(stock)
 
         # print(config.dashes)
 
         if nseresp == 200:
-
-            if firstprint == 0: 
-                firstprint = 1
-                completelist = []
-                completelist.append(list(stockData.keys()))
-
             completelist.append(list(stockData.values()))
-
+            print(stock + ' : done.....')
         elif nseresp == 404:
-            print(stock + ' --> No data found') 
+            print(stock + ' --> No data found')
         else:
             print('Call unsuccessful')
-    print (tabulate(completelist))
+    print(tabulate(completelist, headers=config.DATAITEMLIST, tablefmt='grid'))
+
 
 # invoke main
 if __name__ == "__main__":
