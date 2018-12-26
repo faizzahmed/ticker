@@ -1,8 +1,16 @@
-## Stock ticker
-# py stock ticker
+# Stock ticker
 
-1. Get realtime stock data 
-2. Makes the data available by a cmd
-3. Display stock data using Tkinter GUI 
+The script runs independently in 2 modes 
+
+## SCRIPT 
+
+-   scrapes realtime stock data 
+-   exposes the data as a crude API function 
+-   prints the formated data on terminal  
+
+## GUI
+
+-   uses tkinter to display a wrapper application for the actual script.
+
 
 
