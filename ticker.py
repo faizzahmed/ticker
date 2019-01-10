@@ -7,8 +7,8 @@ from bs4 import BeautifulSoup
 import requests
 import json
 import config
-from operator import itemgetter
 from tabulate import tabulate
+from multiprocessing import Pool
 
 # bashcolors
 # class bcolors:
@@ -33,8 +33,7 @@ def callNSE(symbol):
     page = requests.get(config.NSEURL + symbol)
     return page
 
-# # abstract Scraping logic here
-
+# # abstract Scraping logi c here
 
 def scrapeData(ReqSource):
     jsonStruct = str(BeautifulSoup(ReqSource.content, 'html.parser').find("div", {"id": "responseDiv"})).split(
@@ -65,31 +64,27 @@ def scrapense(symbol):
     stockData, nseresp = scrapeData(respSource)
     return stockData, nseresp
 
-# __main__
+def engine(stock):
+    stockData, nseresp = scrapense(stock)
 
-
-def main():
-    stocklist = readfile(filepath=None)
-
-    # print(config.dashes)
-    # bashcolors
-    # print (bcolors.WARNING + "warning coloured text here" + bcolors.ENDC)
-    completelist = []
-    for stock in stocklist:
-        stockData, nseresp = scrapense(stock)
-
-        # print(config.dashes)
-
-        if nseresp == 200:
-            completelist.append(list(stockData.values()))
-            print(stock + ' : done.....')
-        elif nseresp == 404:
-            print(stock + ' --> No data found')
-        else:
-            print('Call unsuccessful')
-    print(tabulate(completelist, headers=config.DATAITEMLIST, tablefmt='grid'))
+    if nseresp == 200:
+        return list(stockData.values())
+    elif nseresp == 404:
+        print(stock + ': No data found')
+    else:
+        print(stock + ': Call unsuccessful')
+    return None
 
 
 # invoke main
 if __name__ == "__main__":
-    main()
+    stocklist = readfile(filepath=None)
+    print('fetching...')
+    # Create a multiprocessing Pool
+    pool = Pool()                         
+    # process data_inputs iterable with pool
+    completelist = pool.map(engine, stocklist)
+
+    # list comprehension to handle null/None values from scrapedata and then print into table.
+    print(tabulate([x for x in completelist if x is not None], headers=config.DATAITEMLIST, tablefmt='grid'))
+

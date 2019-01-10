@@ -37,7 +37,7 @@ class TickerGUI:
             stockData, nseresp = ticker.scrapense(stock)
 
             if nseresp == 200:
-                stockdatalist = [stockData['symbol'],stockData['lastPrice'],(stockData['pChange']+'%'),stockData['change'],stockData['dayHigh'],stockData['dayLow']]
+                stockdatalist = [stockData['symbol'],stockData['lastPrice'],stockData['pChange'],stockData['change'],stockData['dayHigh'],stockData['dayLow']]
             elif nseresp == 404:
                 stockdatalist = [stock,'No data']
             else:

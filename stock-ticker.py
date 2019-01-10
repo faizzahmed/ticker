@@ -41,7 +41,7 @@ def getstockdata(filepath=None):
         stockData, nseresp = scrapense(stock)
 
         if nseresp == 200:
-            stockdatalist = [stockData['symbol'],stockData['lastPrice'],(stockData['pChange']+'%'),stockData['change'],stockData['dayHigh'],stockData['dayLow']]
+            stockdatalist = [stockData['symbol'],stockData['lastPrice'],stockData['pChange'],stockData['change'],stockData['dayHigh'],stockData['dayLow']]
         elif nseresp == 404:
             stockdatalist = [stock,'No data']
         else:
@@ -60,6 +60,10 @@ def loadfile():
                                            ("All files", "*.*") ))
         return fname
 
+def load_n_refresh():
+    filepath = loadfile()
+
+    getstockdata(filepath=filepath)
 
 if __name__ == "__main__":
     # create window
@@ -77,7 +81,7 @@ if __name__ == "__main__":
     stockcounter = getstockdata()
 
     # browse file button
-    browsebutton = Button(window,text="Browse file",width=15,command=loadfile)
+    browsebutton = Button(window,text="Browse file",width=15,command=load_n_refresh)
     browsebutton.grid(row=stockcounter, column=1)
 
     # refresh button
