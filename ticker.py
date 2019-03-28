@@ -35,6 +35,7 @@ def callNSE(symbol):
 
 # # abstract Scraping logi c here
 
+
 def scrapeData(ReqSource):
     jsonStruct = str(BeautifulSoup(ReqSource.content, 'html.parser').find("div", {"id": "responseDiv"})).split(
         '<div id="responseDiv" style="display:none">', 2)
@@ -64,6 +65,7 @@ def scrapense(symbol):
     stockData, nseresp = scrapeData(respSource)
     return stockData, nseresp
 
+
 def engine(stock):
     stockData, nseresp = scrapense(stock)
 
@@ -81,10 +83,10 @@ if __name__ == "__main__":
     stocklist = readfile(filepath=None)
     print('fetching...')
     # Create a multiprocessing Pool
-    pool = Pool()                         
+    pool = Pool()
     # process data_inputs iterable with pool
     completelist = pool.map(engine, stocklist)
 
     # list comprehension to handle null/None values from scrapedata and then print into table.
-    print(tabulate([x for x in completelist if x is not None], headers=config.DATAITEMLIST, tablefmt='grid'))
-
+    print(tabulate([x for x in completelist if x is not None],
+                   headers=config.DATAITEMLIST, tablefmt='grid'))

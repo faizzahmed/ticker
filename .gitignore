@@ -1,4 +1,6 @@
 .idea/*
 _pycache_/*
+_pycache_\*
 build/*
 dist/*
+.vscode/*
